@@ -1,0 +1,7 @@
+[MASTER]
+
+jobs=1
+
+[MESSAGES CONTROL]
+disable=line-too-long,
+		missing-docstring
