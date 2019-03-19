@@ -4,4 +4,7 @@ jobs=1
 
 [MESSAGES CONTROL]
 disable=line-too-long,
-		missing-docstring
+		missing-docstring,
+		c-extension-no-member,
+		# open3d violates this, so until that gets fixed we ignore these warnings
+		no-member

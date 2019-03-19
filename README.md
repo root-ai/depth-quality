@@ -7,13 +7,22 @@ This repository provides models and code to do depth quality assessment of off-t
 ## Dependencies
 
 * OpenCV
+
+```
+add2virtualenv ~/Documents/libraries/opencv/opencv-3.4.2/build/lib/python3
+```
+
 * PyMesh: https://github.com/PyMesh/PyMesh
 
 ## Fabrication
 
-
+3D printing meshes in: `src/meshes/`
 
 ## Installation & Usage
+
+
+
+## Contributing
 
 
 
