@@ -6,5 +6,6 @@ jobs=1
 disable=line-too-long,
 		missing-docstring,
 		c-extension-no-member,
+		redefined-outer-name,
 		# open3d violates this, so until that gets fixed we ignore these warnings
 		no-member

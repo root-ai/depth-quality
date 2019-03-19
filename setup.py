@@ -17,6 +17,9 @@ if __name__ == '__main__':
         python_requires='>=3.5',
         install_requires=[
             "numpy>=1.16",
-            "open3d-python>=0.5.0"
+            "open3d-python>=0.5.0",
+            # we take a dependency on opencv-contrib-python because the
+            # library for detecting ArUco markers is here
+            "opencv-contrib-python>=3.0,<4.0"
         ]
     )

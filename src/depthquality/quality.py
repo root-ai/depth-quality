@@ -4,19 +4,19 @@ import numpy as np
 import open3d
 import pymesh
 import cv2
-import depthquality.transformations as tfms
+from depthquality import transformations as tfms
 from depthquality.fiducials import detect_arucos
 
 
 def align_pointcloud_to_reference(
-        reference_mesh, rgb_filename, memamp_pc_fname, pointcloud_filename, depth_scale):
+        reference_mesh, rgb_filename, raw_pointcloud_filename, pointcloud_filename, depth_scale):
     img = cv2.imread(rgb_filename)
     detected_arucos = detect_arucos(img)
 
     # read the memmaped .dat pointcloud file, since we need that for
     # calibration targets to know which depth value corresponds
     # to the aruco tags
-    memmap_pc = np.memmap(memamp_pc_fname, dtype=np.float16, mode='r')
+    memmap_pc = np.memmap(raw_pointcloud_filename, dtype=np.float16, mode='r')
     memmap_pc = memmap_pc.reshape(img.shape)
 
     # go through the detected arucos to get the reference coordinates, and concatenate
@@ -48,7 +48,7 @@ def align_pointcloud_to_reference(
 
     # estimate the camera_angle by multiplying the "ideal camera angle"
     # by the inverse of the rotation matrix
-    camera_angle = tfms.inverse_matrix(rigid_transform[:3, :3]) @ np.array([0, 0, 1])
+    camera_angle = rigid_transform[:3, :3] @ np.array([0, 0, -1])
 
     # the PLY files saved from librealsense are JUST vertices (no faces)
     # so they are pretty easy to manipulate

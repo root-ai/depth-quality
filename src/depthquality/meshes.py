@@ -2,12 +2,12 @@
 import pymesh
 import pkg_resources
 import numpy as np
-
 from depthquality.fiducials import TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT
 
 
 class ReferenceMesh:
     def __init__(self, path, backplate_thickness=6.35):
+        self.path = path
         self.reference_mesh = pymesh.load_mesh(path)
 
         # we want to separate the submeshes based on face connectivity,
@@ -24,7 +24,6 @@ class ReferenceMesh:
         self.backplate_mesh = None
         self.pattern_plate_mesh = None
 
-        # TODO: robustify
         for submesh in self.submeshes:
             if not submesh.is_closed():
                 # these are the fiducial marker locations
@@ -51,30 +50,29 @@ class ReferenceMesh:
 
         # the fiducial locations on the reference mesh
         # TODO: generate these automatically from the meshes
-        # TODO: re-generate meshes so it is actually oriented correctly semantically
         self.fiducial_locations = {
-            # top left (visually)
+            # top left
             231: {
-                TOP_LEFT: [-55.5625, 28.575, self.backplate_thickness],
-                TOP_RIGHT: [-75.5625, 28.575, self.backplate_thickness],
-                BOTTOM_RIGHT: [-75.5625, 48.575, self.backplate_thickness],
-                BOTTOM_LEFT: [-55.5625, 48.575, self.backplate_thickness],
+                TOP_LEFT: [-75.5625, 48.575, self.backplate_thickness],
+                TOP_RIGHT: [-55.5625, 48.575, self.backplate_thickness],
+                BOTTOM_RIGHT: [-55.5625, 28.575, self.backplate_thickness],
+                BOTTOM_LEFT: [-75.5625, 28.575, self.backplate_thickness],
             },
-            # top right (visually)
+            # top right
             123: {
-                TOP_LEFT: [55.5625, 28.575, self.backplate_thickness],
-                TOP_RIGHT: [75.5625, 28.575, self.backplate_thickness],
-                BOTTOM_RIGHT: [75.5625, 48.575, self.backplate_thickness],
-                BOTTOM_LEFT: [55.5625, 48.575, self.backplate_thickness],
+                TOP_LEFT: [55.5625, 48.575, self.backplate_thickness],
+                TOP_RIGHT: [75.5625, 48.575, self.backplate_thickness],
+                BOTTOM_RIGHT: [75.5625, 28.575, self.backplate_thickness],
+                BOTTOM_LEFT: [55.5625, 28.575, self.backplate_thickness],
             },
-            # bottom left (visually)
+            # bottom left
             114: {
-                TOP_LEFT: [-55.5625, -28.575, self.backplate_thickness],
-                TOP_RIGHT: [-75.5625, -28.575, self.backplate_thickness],
-                BOTTOM_RIGHT: [-75.5625, -48.575, self.backplate_thickness],
-                BOTTOM_LEFT: [-55.5625, -48.575, self.backplate_thickness],
+                TOP_LEFT: [-75.5625, -28.575, self.backplate_thickness],
+                TOP_RIGHT: [-55.5625, -28.575, self.backplate_thickness],
+                BOTTOM_RIGHT: [-55.5625, -48.575, self.backplate_thickness],
+                BOTTOM_LEFT: [-75.5625, -48.575, self.backplate_thickness],
             },
-            # bottom right (visually)
+            # bottom right
             141: {
                 TOP_LEFT: [55.5625, -28.575, self.backplate_thickness],
                 TOP_RIGHT: [75.5625, -28.575, self.backplate_thickness],
