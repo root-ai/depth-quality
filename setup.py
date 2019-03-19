@@ -17,5 +17,6 @@ if __name__ == '__main__':
         python_requires='>=3.5',
         install_requires=[
             "numpy>=1.16",
+            "open3d-python>=0.5.0"
         ]
     )
