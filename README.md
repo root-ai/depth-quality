@@ -18,7 +18,7 @@ To produce the test fixtures, you need to:
 
 1) Lasercut the back plate. The PDF is provided in `fabrication/backplate.pdf`; the black lines should be cut, and the red lines should be etched. The settings will depend on the lasercutter you use.
 2) Print and affix the ArUco fiducials into the etched portion of the backplate. The fiducials (to scale) are provided in the `fabrication/fiducials/` folder as SVGs of 20 mm by 20 mm.
-3) 3D print the meshes. The meshes are located in `src/meshes/` as OBJ files, and can be directly imported into 3D printing software. Any modifications can be made directly to the meshes, as long as a resulting OBJ is produced as a reference mesh. The settings you need to use on your 3D printer will vary, but it is recommended to have a dual-filament printer capable of printing support material to accurately make these prints.
+3) 3D print the meshes. The meshes are located in `fabrication/3dprinting/` as STL files, and can be directly imported into 3D printing software. Any modifications can be made directly to the meshes, as long as a resulting STL / OBJ is produced as a reference mesh. The settings you need to use on your 3D printer will vary, but it is recommended to have a dual-filament printer capable of printing support material to accurately make these prints.
 
 ## Installation
 
