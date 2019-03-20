@@ -4,7 +4,7 @@
 
 This repository provides models and code to do depth quality assessment of off-the-shelf cameras using 3D printed fixtures.
 
-TODO: include the ArXiv paper link here when it gets posted
+This accompanies a workshop paper currently under review for the ICRA 2019 HAMM workshop.
 
 ## Dependencies
 
