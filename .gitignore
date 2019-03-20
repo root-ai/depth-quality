@@ -1,0 +1,14 @@
+# python-generated files
+src/depthquality/__pycache__/*
+src/tests/__pycache__/*
+src/*.egg-info/*
+build/*
+dist/*
+sdist/*
+
+# jupyter notebook files
+notebooks/.ipynb_checkpoints/*
+
+# sublime / editor files
+*.sublime-workspace
+*.sublime-project

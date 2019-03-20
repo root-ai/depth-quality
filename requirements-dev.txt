@@ -1,0 +1,6 @@
+jupyter
+meshcat-python
+pycodestyle
+pylint
+pytest
+tox
