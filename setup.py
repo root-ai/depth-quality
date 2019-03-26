@@ -1,4 +1,4 @@
-"""Setup file for Janus python package."""
+"""Setup file for depth-quality python package."""
 
 import glob
 from setuptools import setup
