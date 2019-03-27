@@ -1,5 +1,5 @@
 jupyter
-meshcat-python
+meshcat
 pycodestyle
 pylint
 pytest
