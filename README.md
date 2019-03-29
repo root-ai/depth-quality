@@ -24,7 +24,7 @@ To produce the test fixtures, you need to:
 
 It is recommended to use a Python virtual environment to run this code, to not interfere with other dependencies. `PyMesh` must be installed in the virtual environment before installing the rest of the package.
 
-To install the package, run `python setup.py install`. If you plan to modify the package itself, it is recommended that you run `python setup.py develop` to avoid having to re-install on every change.
+Install the package with `python setup.py develop`; the data sources (i.e. the meshes) are not available when running `python setup.py install`, so don't do that!
 
 ### Typical Usage
 
