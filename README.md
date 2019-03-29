@@ -1,5 +1,7 @@
 # Measuring Depth Quality With 3D-Printed Fixtures
 
+![Pointcloud-Mesh Alignment](https://user-images.githubusercontent.com/829379/55204675-4e349280-51a6-11e9-9eb6-824417855674.png)
+
 ## Overview
 
 This repository provides models and code to do depth quality assessment of off-the-shelf cameras using 3D printed fixtures.
@@ -86,3 +88,14 @@ And use the same pipeline as above.
 ## License and Citation
 
 This projected is released under the MIT License - see the LICENSE file for details.
+
+If you found this work useful, please cite it, and reach out to us though a Github issue! We'd love to hear about what you're using this for.
+
+```
+@misc{1903.09169,
+Author = {Michele Pratusevich and Jason Chrisos and Shreyas Aditya},
+Title = {Quantitative Depth Quality Assessment of RGBD Cameras At Close Range Using 3D Printed Fixtures},
+Year = {2019},
+Eprint = {arXiv:1903.09169},
+}
+```
