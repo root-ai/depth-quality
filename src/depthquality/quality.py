@@ -4,21 +4,31 @@ import numpy as np
 import open3d
 import pymesh
 import cv2
+import json
 from depthquality import transformations as tfms
 from depthquality.fiducials import detect_arucos
 
 
 def align_pointcloud_to_reference(
-        reference_mesh, rgb_filename, raw_pointcloud_filename, pointcloud_filename, depth_scale):
+        reference_mesh, rgb_filename, camera_matrix_filename, pointcloud_filename, depth_scale):
     img = cv2.imread(rgb_filename)
     detected_arucos = detect_arucos(img)
 
-    # read the memmaped .dat pointcloud file, since we need that for
-    # calibration targets to know which depth value corresponds
-    # to the aruco tags
-    memmap_pc = np.memmap(raw_pointcloud_filename, dtype=np.float16, mode='r')
-    memmap_pc = memmap_pc.reshape(img.shape)
+    with open(camera_matrix_filename, 'r') as j_file:
+        camera_matrix = json.load(j_file)
 
+    # the PLY files saved from librealsense are JUST vertices (no faces)
+    # so they are pretty easy to manipulate
+    pointcloud = open3d.read_point_cloud(pointcloud_filename)
+
+    # Create a dictionary of the aruco corner points so as to find the 3D coordinates when
+    # deprojecting the pointcloud.
+    corner_coordinates = {}
+    for aruco_id, corners in detected_arucos.items():
+        for location, corner in corners.items():
+            corner_coordinates[(int(corner[1]), int(corner[0]))] = []
+
+    compute_corner_coordinates(pointcloud, camera_matrix, corner_coordinates)
     # go through the detected arucos to get the reference coordinates, and concatenate
     # two lists of matrices corresponding to both
     measured_coords = []
@@ -29,11 +39,10 @@ def align_pointcloud_to_reference(
             # in the reference mesh
             reference_coordinate = reference_mesh.get_fiducial_coordinate(
                 fiducial_id=aruco_id, location=location)
-            detected_coordinate = np.array(
-                memmap_pc[int(corner[1]), int(corner[0])]).tolist()
+            detected_coordinate = corner_coordinates[(int(corner[1]), int(corner[0]))]
 
             # if the depth is a valid value, then we can use it for estimation
-            if detected_coordinate[-2] != 0:
+            if len(detected_coordinate) != 0:
                 measured_coords.append(detected_coordinate)
                 reference_coords.append(reference_coordinate)
 
@@ -48,12 +57,7 @@ def align_pointcloud_to_reference(
 
     # estimate the camera_angle by multiplying the "ideal camera angle"
     # by the inverse of the rotation matrix
-    camera_angle = rigid_transform[:3, :3] @ np.array([0, 0, -1])
-
-    # the PLY files saved from librealsense are JUST vertices (no faces)
-    # so they are pretty easy to manipulate
-    pointcloud = open3d.read_point_cloud(pointcloud_filename)
-
+    camera_angle = rigid_transform[:3,:3] @ np.array([0, 0, -1])
     # transform the pointcloud
     # and write a new one
     pointcloud.transform(rigid_transform)
@@ -86,6 +90,15 @@ def clip_pointcloud_to_pattern_area(reference_mesh, aligned_pointcloud, depth_sc
         max_bound=depth_scale * max_bound)
 
     return cropped_pointcloud
+
+def compute_corner_coordinates(pointcloud, camera_matrix, corner_coordinates):
+
+    for point in np.asarray(pointcloud.points):
+        u = np.floor(camera_matrix["fx"] * point[0] / point[2] + camera_matrix["ppx"])
+        v = np.floor(camera_matrix["fy"] * point[1] / point[2] + camera_matrix["ppy"])
+
+        if (v, u) in corner_coordinates.keys():
+            corner_coordinates[(v,u)] = point
 
 
 def calculate_rmse_and_density(ground_truth_mesh, cropped_pointcloud, depth_scale, camera_angle):
