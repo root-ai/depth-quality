@@ -8,7 +8,7 @@ import depthquality.meshes as meshes
 def get_test_files(subfolder):
     return {
         "rgb": os.path.join(os.path.dirname(__file__), "data/{}/1.png".format(subfolder)),
-        "pc": os.path.join(os.path.dirname(__file__), "data/{}/1.dat".format(subfolder)),
+        "camera_matrix": os.path.join(os.path.dirname(__file__), "data/{}/camera_matrix.json".format(subfolder)),
         "pointcloud": os.path.join(os.path.dirname(__file__), "data/{}/1.ply".format(subfolder)),
         "depth_scale": 0.001
     }
@@ -18,7 +18,7 @@ def delete_all_keep_original(subfolder, original_files):
     # delete any files that were added as a result of the tests
     for file in os.listdir(os.path.join(os.path.dirname(__file__), "data/{}".format(subfolder))):
         full_filename = os.path.join(os.path.dirname(__file__), "data", subfolder, file)
-        if full_filename not in (original_files["rgb"], original_files["pc"],
+        if full_filename not in (original_files["rgb"], original_files["camera_matrix"],
                                  original_files["pointcloud"]):
             os.remove(full_filename)
 
@@ -65,7 +65,7 @@ def run_alignment_calculation_test(
     aligned_pointcloud, camera_angle = quality.align_pointcloud_to_reference(
         reference_fixture,
         pytest_fixture["rgb"],
-        pytest_fixture["pc"],
+        pytest_fixture["camera_matrix"],
         pytest_fixture["pointcloud"], depth_scale=pytest_fixture["depth_scale"])
 
     cropped_pointcloud = quality.clip_pointcloud_to_pattern_area(
@@ -77,8 +77,8 @@ def run_alignment_calculation_test(
         depth_scale=pytest_fixture["depth_scale"],
         camera_angle=camera_angle)
 
-    assert pytest.approx(rmse, 0.001) == expected_rmse
-    assert pytest.approx(density, 0.001) == expected_density
+    assert pytest.approx(rmse, 0.01) == expected_rmse
+    assert pytest.approx(density, 0.01) == expected_density
 
 
 def test_vertical_cylinder(vert_cylinders):
