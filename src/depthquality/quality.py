@@ -23,12 +23,12 @@ def align_pointcloud_to_reference(
 
     # Create a dictionary of the aruco corner points so as to find the 3D coordinates when
     # deprojecting the pointcloud.
-    corner_coordinates = {}
+    corner_list = []
     for aruco_id, corners in detected_arucos.items():
         for location, corner in corners.items():
-            corner_coordinates[(int(corner[1]), int(corner[0]))] = []
+            corner_list.append((int(corner[1]), int(corner[0])))
 
-    compute_corner_coordinates(pointcloud, camera_matrix, corner_coordinates)
+    corner_coordinates = compute_corner_coordinates(pointcloud, camera_matrix, corner_list)
     # go through the detected arucos to get the reference coordinates, and concatenate
     # two lists of matrices corresponding to both
     measured_coords = []
@@ -42,7 +42,7 @@ def align_pointcloud_to_reference(
             detected_coordinate = corner_coordinates[(int(corner[1]), int(corner[0]))]
 
             # if the depth is a valid value, then we can use it for estimation
-            if len(detected_coordinate) != 0:
+            if detected_coordinate.size != 0:
                 measured_coords.append(detected_coordinate)
                 reference_coords.append(reference_coordinate)
 
@@ -57,7 +57,7 @@ def align_pointcloud_to_reference(
 
     # estimate the camera_angle by multiplying the "ideal camera angle"
     # by the inverse of the rotation matrix
-    camera_angle = rigid_transform[:3,:3] @ np.array([0, 0, -1])
+    camera_angle = rigid_transform[:3, :3] @ np.array([0, 0, -1])
     # transform the pointcloud
     # and write a new one
     pointcloud.transform(rigid_transform)
@@ -91,15 +91,26 @@ def clip_pointcloud_to_pattern_area(reference_mesh, aligned_pointcloud, depth_sc
 
     return cropped_pointcloud
 
-def compute_corner_coordinates(pointcloud, camera_matrix, corner_coordinates):
+def compute_corner_coordinates(pointcloud, camera_matrix, corner_list):
+
+    corner_coordinates = {}
+    rectified_corner_cordinates = {}
+
+    for entry in corner_list:
+        corner_coordinates[entry] = []
 
     for point in np.asarray(pointcloud.points):
         u = np.floor(camera_matrix["fx"] * point[0] / point[2] + camera_matrix["ppx"])
         v = np.floor(camera_matrix["fy"] * point[1] / point[2] + camera_matrix["ppy"])
 
-        if (v, u) in corner_coordinates.keys():
-            corner_coordinates[(v,u)] = point
+        if (v, u) in corner_list:
+            corner_coordinates[(v, u)].append(point)
+            
+    for key, val in corner_coordinates.items():
+        if val:
+            rectified_corner_cordinates[key] = np.mean(val, axis=0)
 
+    return rectified_corner_cordinates
 
 def calculate_rmse_and_density(ground_truth_mesh, cropped_pointcloud, depth_scale, camera_angle):
     # need to get the reference mesh and the pointcloud in the same units
