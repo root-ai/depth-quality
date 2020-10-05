@@ -33,10 +33,8 @@ Install the package with `python setup.py develop`; the data sources (i.e. the m
 After fabricating the desired fixture, set up your test environment and capture some images and data using your camera's API. You will also need to know the depth scale at which the depth values are calculated. This will vary per-camera, and therefore you will have to do some work to get these files:
 
 1) An RGB or grayscale image - for doing ArUco detection. It can be saved in any format that can be read by `opencv` - a PNG is recommended.
-2) Using your camera's API, deproject the depth image to compute the pointcloud. Save this pointcloud in two formats:
-
-	a) A raw format (we use a `np.memmap` array saved as a `.dat` file). This should preserve every single pixel value (including the pixels that have invalid depth formats) rather than being written in a typical sparse pointcloud format. This serves the purpose of getting the world coordinates that correspond to each 2D pixel format.
-	b) A pointcloud saved in a standard pointcloud format like PLY. Anything that can be read by [`open3d.read_point_cloud`](http://www.open3d.org/docs/python_api/io.html#open3d.io.read_point_cloud) should work.
+2) Using your camera's API, deproject the depth image to compute the pointcloud. Save this pointcloud in a standard pointcloud format like PLY. Anything that can be read by [`open3d.read_point_cloud`](http://www.open3d.org/docs/python_api/io.html#open3d.io.read_point_cloud) should work.
+3) The camera intrinsics of the sensor in (`.json`) format. See this [example](src/tests/data/angled_plates/camera_matrix.json) for the formatting.
 
 If you are using one of the reference meshes provided directly with this repository, simply import it directly from the repo:
 
@@ -44,7 +42,7 @@ If you are using one of the reference meshes provided directly with this reposit
 from depthquality.meshes import VERTICAL_CYLINDERS
 ```
 
-And using the three files you saved (`.png`, `.dat`, `.ply`) you can run the evaluation pipeline:
+And using the three files you saved (`.png`, `.json`, `.ply`) you can run the evaluation pipeline:
 
 
 ```
@@ -55,7 +53,7 @@ import depthquality.quality as quality
 aligned_pointcloud, camera_angle = quality.align_pointcloud_to_reference(
     reference_mesh=VERTICAL_CYLINDERS,
     rgb_filename="img.png",
-    raw_pointcloud_filename="raw_world.dat",
+    camera_matrix_filename="camera_matrix.json",
     pointcloud_filename="sparse_world.ply",
     depth_scale=0.001)
 
