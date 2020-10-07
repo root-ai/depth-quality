@@ -116,7 +116,7 @@ def compute_corner_coordinates(pointcloud, camera_matrix, corner_list):
 
 
 def fuzzy_match_corner(u, v, corners, pixel_tol=3):
-    # If the deprojected point is +/- 3 pixels away from the detected aruco corner
+    # If the deprojected point is +/- pixel_tol away from the detected aruco corner
     # consider it a matched point.
     for corner in corners:
         if corner[0] - pixel_tol <= v <= corner[0] + pixel_tol and \
