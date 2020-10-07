@@ -96,7 +96,7 @@ def test_horiz_cylinder(horiz_cylinders):
         reference_fixture=meshes.HORIZONTAL_CYLINDERS,
         pytest_fixture=horiz_cylinders,
         expected_rmse=3.358,
-        expected_density=0.714)
+        expected_density=0.704)
 
 
 def test_spheres(spheres):
