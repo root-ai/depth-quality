@@ -91,6 +91,7 @@ def clip_pointcloud_to_pattern_area(reference_mesh, aligned_pointcloud, depth_sc
 
     return cropped_pointcloud
 
+
 def compute_corner_coordinates(pointcloud, camera_matrix, corner_list):
 
     corner_coordinates = {}
@@ -103,14 +104,26 @@ def compute_corner_coordinates(pointcloud, camera_matrix, corner_list):
         u = np.floor(camera_matrix["fx"] * point[0] / point[2] + camera_matrix["ppx"])
         v = np.floor(camera_matrix["fy"] * point[1] / point[2] + camera_matrix["ppy"])
 
-        if (v, u) in corner_list:
-            corner_coordinates[(v, u)].append(point)
-            
+        matched_corner = fuzzy_match_corner(u, v, corner_list)
+        if matched_corner:
+            corner_coordinates[matched_corner].append(point)
+
     for key, val in corner_coordinates.items():
         if val:
             rectified_corner_cordinates[key] = np.mean(val, axis=0)
 
     return rectified_corner_cordinates
+
+
+def fuzzy_match_corner(u, v, corners, pixel_tol=3):
+    # If the deprojected point is +/- pixel_tol away from the detected aruco corner
+    # consider it a matched point.
+    for corner in corners:
+        if corner[0] - pixel_tol <= v <= corner[0] + pixel_tol and \
+           corner[1] - pixel_tol <= u <= corner[1] + pixel_tol:
+
+            return corner
+
 
 def calculate_rmse_and_density(ground_truth_mesh, cropped_pointcloud, depth_scale, camera_angle):
     # need to get the reference mesh and the pointcloud in the same units
