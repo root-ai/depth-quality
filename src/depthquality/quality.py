@@ -81,7 +81,7 @@ def clip_pointcloud_to_pattern_area(reference_mesh, aligned_pointcloud, depth_sc
     max_model_z = np.max([[s.bbox[0][2], s.bbox[1][2]] for s in reference_mesh.pattern_meshes])
 
     # buffer that we consider our "error bound" in Z
-    buffer_bounds = 5  # mm
+    buffer_bounds = 3  # mm
 
     # we know the reference mesh is zero-centered, so take the bounds centered at the origin
     # as well
