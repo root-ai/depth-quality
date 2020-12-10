@@ -25,8 +25,10 @@ def align_pointcloud_to_reference(
     # deprojecting the pointcloud.
     corner_list = []
     for aruco_id, corners in detected_arucos.items():
-        for location, corner in corners.items():
-            corner_list.append((int(corner[1]), int(corner[0])))
+        # Add only the aruco ids that we care about to the corner_list
+        if aruco_id in reference_mesh.fiducial_locations.keys():
+            for location, corner in corners.items():
+                corner_list.append((int(corner[1]), int(corner[0])))
 
     corner_coordinates = compute_corner_coordinates(pointcloud, camera_matrix, corner_list)
     # go through the detected arucos to get the reference coordinates, and concatenate
@@ -34,17 +36,19 @@ def align_pointcloud_to_reference(
     measured_coords = []
     reference_coords = []
     for aruco_id, corners in detected_arucos.items():
-        for location, corner in corners.items():
-            # match the detected corner to the appropriate corner
-            # in the reference mesh
-            reference_coordinate = reference_mesh.get_fiducial_coordinate(
-                fiducial_id=aruco_id, location=location)
-            detected_coordinate = corner_coordinates[(int(corner[1]), int(corner[0]))]
+        # Find the coordinates for only the 4 aruco tags we know about
+        if aruco_id in reference_mesh.fiducial_locations.keys():
+            for location, corner in corners.items():
+                # match the detected corner to the appropriate corner
+                # in the reference mesh
+                reference_coordinate = reference_mesh.get_fiducial_coordinate(
+                    fiducial_id=aruco_id, location=location)
+                detected_coordinate = corner_coordinates[(int(corner[1]), int(corner[0]))]
 
-            # if the depth is a valid value, then we can use it for estimation
-            if detected_coordinate.size != 0:
-                measured_coords.append(detected_coordinate)
-                reference_coords.append(reference_coordinate)
+                # if the depth is a valid value, then we can use it for estimation
+                if detected_coordinate.size != 0:
+                    measured_coords.append(detected_coordinate)
+                    reference_coords.append(reference_coordinate)
 
     # convert the coordinates into arrays for processing, and make sure the reference
     # is scaled by the depth_scale of the detected pointcloud
@@ -77,7 +81,7 @@ def clip_pointcloud_to_pattern_area(reference_mesh, aligned_pointcloud, depth_sc
     max_model_z = np.max([[s.bbox[0][2], s.bbox[1][2]] for s in reference_mesh.pattern_meshes])
 
     # buffer that we consider our "error bound" in Z
-    buffer_bounds = 3  # mm
+    buffer_bounds = 5  # mm
 
     # we know the reference mesh is zero-centered, so take the bounds centered at the origin
     # as well
