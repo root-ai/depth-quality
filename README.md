@@ -60,7 +60,7 @@ aligned_pointcloud, camera_angle = quality.align_pointcloud_to_reference(
 # this will crop the pointcloud to the relevant working area
 cropped_pointcloud = quality.clip_pointcloud_to_pattern_area(
     reference_mesh=VERTICAL_CYLINDERS,
-    aligned_pointcloud, depth_scale=0.001)
+    aligned_pointcloud=aligned_pointcloud, depth_scale=0.001)
 
 # this will actually compute the RMSE and density of the mesh
 rmse, density = quality.calculate_rmse_and_density(
