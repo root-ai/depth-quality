@@ -19,7 +19,8 @@ def align_pointcloud_to_reference(
 
     # the PLY files saved from librealsense are JUST vertices (no faces)
     # so they are pretty easy to manipulate
-    pointcloud = open3d.read_point_cloud(pointcloud_filename)
+    pointcloud = open3d.io.read_point_cloud(pointcloud_filename)
+
 
     # Create a dictionary of the aruco corner points so as to find the 3D coordinates when
     # deprojecting the pointcloud.
