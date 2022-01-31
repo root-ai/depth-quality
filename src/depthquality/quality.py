@@ -19,7 +19,8 @@ def align_pointcloud_to_reference(
 
     # the PLY files saved from librealsense are JUST vertices (no faces)
     # so they are pretty easy to manipulate
-    pointcloud = open3d.read_point_cloud(pointcloud_filename)
+    pointcloud = open3d.io.read_point_cloud(pointcloud_filename)
+
 
     # Create a dictionary of the aruco corner points so as to find the 3D coordinates when
     # deprojecting the pointcloud.
@@ -88,10 +89,11 @@ def clip_pointcloud_to_pattern_area(reference_mesh, aligned_pointcloud, depth_sc
     min_bound = np.array([-working_width / 2, -working_height / 2, min_model_z - buffer_bounds])
     max_bound = np.array([working_width / 2, working_height / 2, max_model_z + buffer_bounds])
 
-    cropped_pointcloud = open3d.geometry.crop_point_cloud(
+    cropped_pointcloud = open3d.geometry.PointCloud.crop(
         aligned_pointcloud,
+        open3d.geometry.AxisAlignedBoundingBox(
         min_bound=depth_scale * min_bound,
-        max_bound=depth_scale * max_bound)
+        max_bound=depth_scale * max_bound))
 
     return cropped_pointcloud
 
